@@ -5,9 +5,9 @@ IoT development and deployment infrastructure. Messaging internally between cont
 and to the outside world / visualisation uses MQTT messaging.
 
 Currently supporting the following sensors:
-Gill Windsonic
-Vaisala PTU300
-Vaisala PTB220/330
-Modbus Support
+* Gill Windsonic
+* Vaisala PTU300
+* Vaisala PTB220/330
+* Modbus Support
 
 
