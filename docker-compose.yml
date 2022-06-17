@@ -1,0 +1,110 @@
+version: '2.1'
+volumes:
+  settings:
+  dashboard-data:
+  sensor-data:
+services:
+  wifi-connect:
+    build: ./wifi-connect
+    restart: always
+    network_mode: host
+    privileged: true
+    labels:
+      io.balena.features.dbus: '1'
+      io.balena.features.firmware: '1'
+
+  influxdb:
+    image: influxdb@sha256:73f876e0c3bd02900f829d4884f53fdfffd7098dd572406ba549eed955bf821f
+    container_name: influxdb
+    restart: always
+    environment:
+      - INFLUX_DATA_DIR=/data
+    volumes:
+      - 'sensor-data:/data'
+
+  mqtt:
+    image: arm32v6/eclipse-mosquitto@sha256:ec3e1dbb9e198ff04d62c2d0f6eff74cad7438c7d080b89a28428fb96c8479c4
+    ports:
+      - "1883:1883"
+    restart: always
+
+  connector:
+    image: balenablocks/connector:latest
+    restart: always
+    labels:
+      io.balena.features.balena-api: '1' # necessary to discover services
+      io.balena.features.supervisor-api: 1  # necessary to discover services in local mode
+    privileged: true # necessary to change container hostname
+    depends_on:
+      - mqtt
+      - influxdb
+
+  dashboard:
+    image: balenablocks/dashboard:latest
+    restart: always
+    volumes:
+      - 'dashboard-data:/data'
+    ports:
+      - '80:80'
+
+  data_services:
+    build: ./data_services
+    restart: always
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  data_processing:
+    build: ./data_processing
+    restart: always
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  serial-A:
+    privileged: true
+    build: ./serial_sensor
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  serial-B:
+    privileged: true
+    build: ./serial_sensor
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  serial-C:
+    privileged: true
+    build: ./serial_sensor
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  serial-D:
+    privileged: true
+    build: ./serial_sensor
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  modbus_collector:
+    privileged: true
+    build: ./modbus_collector
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - mqtt
+
+  raingauge:
+    privileged: true
+    build: ./raingauge
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - mqtt

@@ -1,0 +1,16 @@
+FROM balenablocks/wifi-connect:%%BALENA_ARCH%%
+
+# Copy over customised start shell
+# COPY start.sh ./start.sh
+
+# Environmental variables are stated here for use when developing in 'local'
+# mode and will also be used if they are not set in the Balena Dashboard,
+# or Balena dashboard is not used. Each variable can be set in a balena.yml
+# file under.balena=>secrets=>balena.yml as a global variable or on a
+# 'per service' basis. The .balena folder should excluded from any code hosting
+# platform e.g. GitHub to avoid secret information being revealed in the codebase.
+ARG PORTAL_SSID
+ARG PORTAL_PASSPHRASE
+
+ENV PORTAL_SSID=${PORTAL_SSID}
+ENV PORTAL_PASSPHRASE=${PORTAL_PASSPHRASE}

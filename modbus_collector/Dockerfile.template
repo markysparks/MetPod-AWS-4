@@ -1,0 +1,107 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.9-run
+
+# Set our working directory
+WORKDIR /usr/src/app
+
+# Copy requirements.txt first for better cache on later pushes
+COPY requirements.txt requirements.txt
+
+# pip install python deps from requirements.txt on the resin.io build server
+RUN pip3 install -r requirements.txt
+
+# This will copy all files in our root to the working directory in the container
+COPY . ./
+
+# Environmental variables are stated here for use when developing in 'local'
+# mode and will also be used if they are not set in the Balena Dashboard,
+# or Balena dashboard is not used. Each variable can be set in a balena.yml
+# file under.balena=>secrets=>balena.yml as a global variable or on a
+# 'per service' basis. The .balena folder should excluded from any code hosting
+# platform e.g. GitHub to avoid secret information being revealed in the codebase.
+ARG ENABLE
+ARG MODBUS_SCANRATE
+ARG MODBUS_MODE
+ARG RTU_PORT
+ARG RTU_BAUD
+ARG TCP_ADDRESS
+ARG MQTT_BROKER
+ARG PRESS_CORR
+ARG TEMP_CORR
+ARG HUMI_CORR
+ARG ANEMO_OFFSET
+ARG MQTT_QOS
+
+ARG BATTERY_ID
+ARG BATTERY_REG
+ARG PANELTEMP_ID
+ARG PANELTEMP_REG
+ARG WINDSPD_ID
+ARG WINDSPD_REG
+ARG WINDDIR_ID
+ARG WINDDIR_REG
+ARG WINDGUST
+ARG WINDGUST_REG
+ARG PRESSURE_ID
+ARG PRESSURE_REG
+ARG PRESSTEND_ID
+ARG PRESSTEND_REG
+ARG PRESSTREND_ID
+ARG PRESSTREND_REG
+ARG DBTEMP_ID
+ARG DBTEMP_REG
+ARG DBTEMP2_ID
+ARG DBTEMP2_REG
+ARG HUMI_ID
+ARG HUMI_REG
+ARG DEWPT_ID
+ARG DEWPT_REG
+ARG RAINRATE_ID
+ARG RAINRATE_REG
+ARG RAINACCUM_ID
+ARG RAINACCUM_REG
+ARG WINDSPD10M_ID
+ARG WINDSPD10M_REG
+ARG WINDDIR10M_ID
+ARG WINDDIR10M_REG
+ARG DAYMAX_ID
+ARG DAYMAX_REG
+ARG NIGHTMIN_ID
+ARG NIGHTMIN_REG
+
+ENV MQTT_BROKER=${MQTT_BROKER}
+ENV PRESS_CORR=${PRESS_CORR}
+ENV TEMP_CORR=${TEMP_CORR}
+ENV HUMI_CORR=${HUMI_CORR}
+ENV ANEMO_OFFSET=${ANEMO_OFFSET}
+ENV ENABLE=${ENABLE}
+ENV RTU_PORT=${RTU_PORT}
+ENV RTU_BAUD=${RTU_BAUD}
+ENV TCP_ADDRESS=${TCP_ADDRESS}
+ENV MODBUS_MODE=${MODBUS_MODE}
+ENV MODBUS_SCANRATE=${MODBUS_SCANRATE}
+ENV MQTT_TOPIC=${MQTT_TOPIC}
+ENV MQTT_QOS=${MQTT_QOS}
+
+ENV BATTERY_ID=${BATTERY_ID}
+ENV BATTERY_REG=${BATTERY_REG}
+ENV WINDSPD_ID=${WINDSPD_ID}
+ENV WINDSPD_REG=${WINDSPD_REG}
+ENV WINDDIR_ID=${WINDDIR_ID}
+ENV WINDDIR_REG=${WINDDIR_REG}
+ENV PRESSURE_ID=${PRESSURE_ID}
+ENV PRESSURE_REG=${PRESSURE_REG}
+ENV PRESSTEND_ID=${PRESSTEND_ID}
+ENV PRESSTEND_REG=${PRESSTEND_REG}
+ENV PRESSTREND_ID=${PRESSTREND_ID}
+ENV PRESSTREND_REG=${PRESSTREND_REG}
+ENV DBTEMP_ID=${DBTEMP_ID}
+ENV DBTEMP_REG=${DBTEMP_REG}
+ENV DBTEMP2_ID=${DBTEMP2_ID}
+ENV DBTEMP2_REG=${DBTEMP2_REG}
+ENV HUMI_ID=${HUMI_ID}
+ENV HUMI_REG=${HUMI_REG}
+ENV DEWPT_ID=${DEWPT_ID}
+ENV DEWPT_REG=${DEWPT_REG}
+
+# script to run when container starts up on the device
+CMD ["python3","-u","startup_modbus.py"]

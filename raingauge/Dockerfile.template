@@ -1,0 +1,53 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.9-build
+
+# use `install_packages` if you need to install dependencies,
+# for instance if you need git, just uncomment the line below.
+# 'build-essential' required for subsequent setup of RPi.GPIO below.
+RUN install_packages build-essential
+#RUN apt-get install gcc python-dev
+
+#RUN apt-get update -y && apt-get install build-essential
+
+# Set our working directory
+WORKDIR /usr/src/app
+
+# Copy requirements.txt first for better cache on later pushes
+COPY requirements.txt requirements.txt
+
+# pip install python deps from requirements.txt on the resin.io build server
+RUN pip install -r requirements.txt
+
+# This will copy all files in our root to the working  directory in the container
+COPY . ./
+
+# Enable udevd so that plugged dynamic hardware devices show up in our container.
+ENV UDEV=1
+
+# Environmental variables are stated here for use when developing in 'local'
+# mode and will also be used if they are not set in the Balena Dashboard,
+# or Balena dashboard is not used. Each variable can be set in a balena.yml
+# file under.balena=>secrets=>balena.yml as a global variable or on a
+# 'per service' basis. The .balena folder should excluded from any code hosting
+# platform e.g. GitHub to avoid secret information being revealed in the codebase.
+ARG MQTT_BROKER
+ARG MQTT_TOPIC
+ARG AMOUNT_PER_TIP
+ARG UNITS
+ARG TX_INTERVAL
+ARG RESET_HOUR
+ARG GPIO_PIN
+ARG UNITS
+ARG ENABLE
+
+ENV MQTT_BROKER=${MQTT_BROKER}
+ENV MQTT_TOPIC=${MQTT_TOPIC}
+ENV AMOUNT_PER_TIP=${AMOUNT_PER_TIP}
+ENV UNITS=${UNITS}
+ENV TX_INTERVAL=${TX_INTERVAL}
+ENV RESET_HOUR=${RESET_HOUR}
+ENV GPIO_PIN=${GPIO_PIN}
+ENV UNITS=${UNITS}
+ENV ENABLE=${ENABLE}
+
+# RAINGAUGE.py will run when container starts up on the device
+CMD ["python","-u","raingauge_start.py"]
