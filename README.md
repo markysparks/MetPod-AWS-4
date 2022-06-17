@@ -1,4 +1,4 @@
-# Metpod4
+# Metpod AWS 4
 An automatic weather station running on a Raspberry Pi or variant using
 containers operating under Balena OS and utilising the Balena 
 IoT development and deployment infrastructure. Messaging internally between containers
