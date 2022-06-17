@@ -8,6 +8,7 @@ Currently supporting the following sensors:
 * Gill Windsonic
 * Vaisala PTU300
 * Vaisala PTB220/330
+* Tipping bucket raingauge
 * Modbus Support
 
 
